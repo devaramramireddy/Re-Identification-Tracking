@@ -151,7 +151,14 @@ class PersonTracker:
                 # Update Kalman filter for this person
                 kf = self.tracked_persons[best_match_id]['kalman_filter']
                 kf.predict()
-                measurement = np.array([x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2])
+                x1_cpu = x1.cpu().numpy() if x1.is_cuda else x1.numpy()
+                x2_cpu = x2.cpu().numpy() if x2.is_cuda else x2.numpy()
+                y1_cpu = y1.cpu().numpy() if y1.is_cuda else y1.numpy()
+                y2_cpu = y2.cpu().numpy() if y2.is_cuda else y2.numpy()
+
+                # Now perform the operation with NumPy
+                measurement = np.array([x1_cpu + (x2_cpu - x1_cpu) / 2, y1_cpu + (y2_cpu - y1_cpu) / 2])
+                #measurement = np.array([x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2])
                 kf.update(measurement)
 
                 # Draw bounding box and ID
@@ -164,40 +171,3 @@ class PersonTracker:
                     cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 0, 255), 3)  # Red box for tracked person
 
         return frame
-
-
-    #def update_persons(self, frame):
-    #    results = self.yolo(frame)
-    #    current_frame_ids = set()
-    #    potential_matches = {}
-    #    for x1, y1, x2, y2, conf, cls_id in results[0].boxes.data:
-    #        if cls_id == 0 and conf > self.similarity_threshold_yolo:  # Class '0' for person
-    #            crop = frame[int(y1):int(y2), int(x1):int(x2)]
-    #            features = self.get_person_features(crop)
-    #            person_id = self.find_matching_person(features)
-#
-    #            if person_id is None:
-    #                person_id = self.person_id_counter
-    #                self.person_id_counter += 1
-    #                self.tracked_persons[person_id] = {'features': features,
-    #                                                   'kalman_filter': self.initialize_kalman_filter()}
-#
-    #            current_frame_ids.add(person_id)  # Mark this ID as used in the current frame
-#
-    #            # Update Kalman filter for this person
-    #            kf = self.tracked_persons[person_id]['kalman_filter']
-    #            kf.predict()
-    #            measurement = np.array([x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2])
-    #            kf.update(measurement)
-#
-    #            # Draw bounding box and ID
-    #            cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
-    #            cv2.putText(frame, f'ID: {person_id}', (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-    #                        (0, 255, 0), 2)
-#
-    #            # If this is the person we are tracking, highlight it
-    #            if person_id == self.tracking_id:
-    #                cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 0, 255),
-    #                              3)  # Red box for tracked person
-#
-    #    return frame
