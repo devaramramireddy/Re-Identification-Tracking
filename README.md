@@ -63,7 +63,8 @@ Person Re-Identification and Tracking
 > - Below are examples of curl requests for both RGB and Thermal images, covering both Non-clustering and Clustering approaches.
 > - System automatically display the processed video, If you want the quit the process please press "q" key.
 >
-> #### Curl Request files from with in the docker image.
+
+> #### Curl Request - send file from local machine(if you run demo from your local python interpreter).
 > ```commandline
 > curl -X POST http://localhost:8000/process_frames -H "Content-Type: application/json" -d '{
 >   "config": {
@@ -79,7 +80,8 @@ Person Re-Identification and Tracking
 >   }
 > }'
 > ```
-> #### Curl Request - send file from local machine.
+>
+> #### Curl Request files from with in the docker image(if you run demo from docker python interpreter).
 > ```commandline
 > curl -X POST http://localhost:8000/process_frames -H "Content-Type: application/json" -d '{
 >   "config": {
